@@ -1,0 +1,145 @@
+//quick notes about the script. It is not afk, it can get hung up on buildings and trees because UOSteam doesnt have pathfinding.
+//It catches tames from a lot further away. It summons a daemon to protect you unmounted. Summons an air ele mounted. Works best unmounted
+//Will auto heal you below 75hp and auto cure you between tames
+//If you hit the macro button when you are in trouble, it resets the script and auto heals/cures
+//It auto kills your tames
+//If you get in a very precarious situation, I recommend having a secondary macro button ready to stop the script so you can get away for a moment :slight_smile:
+//It doesnt tame by level... yet... thats my next project
+//TamerHelpervUOF (Original) By Vlek, Grunt of the Bloodclan (Bloodclan.org).
+//Update by Ofnir!
+//CAUTION: Must watch this script. It's not as intelligent as the regular one.
+if poisoned
+  cast 'Cure'
+  target self
+endif
+if hits < 75
+  cast 'Heal'
+  target self
+  pause 1600
+endif
+if mana < 60
+  useskill 'meditation'
+endif
+if followers < 1
+  cast 'Summon Daemon'
+  pause 5000
+  msg 'all guard me'
+endif
+if followers == 1
+  cast "Summon Air Elemental"
+  pause 6000
+  msg 'all guard me'
+endif
+@clearusequeue
+@cancelautotarget
+if not listexists 'NameTheTamed'
+  //Set this name to whatever you want.
+  createlist 'NameTheTamed'
+  pushlist 'NameTheTamed' 'Renameme'
+endif
+if not listexists 'tameables'
+  createlist 'tameables'
+pushlist 'tameables' 0x7t //Hellcat (Large)
+  pushlist 'tameables' 0x62 //Hellhound
+  pushlist 'tameables' 0xbc //Savage Ridgeback
+  pushlist 'tameables' 0xbb //Ridgeback
+  pushlist 'tameables' 0x17 //Dire Wolf
+  pushlist 'tameables' 0xce //Lava Lizard
+  pushlist 'tameables' 0x14 //Frost spider
+  pushlist 'tameables' 0xc9 //Hellcat (Small)
+  pushlist 'tameables' 0xda //Frenzied Ostard
+  pushlist 'tameables' 0x50 //Giant Toad
+  pushlist 'tameables' 0xe8 //Bull
+  pushlist 'tameables' 0xe9 //Bull2
+  pushlist 'tameables' 0x22 //White Wolf
+  pushlist 'tameables' 0x25 //White Wolf2
+  pushlist 'tameables' 0x1c //Giant Spider
+  pushlist 'tameables' 0xd4 //Grizzly Bear
+  pushlist 'tameables' 0xea //Great Hart
+  pushlist 'tameables' 0x41 //Snow leopard
+  pushlist 'tameables' 0x40 //Snow leopard
+  pushlist 'tameables' 0x19 //Gray wolf
+  pushlist 'tameables' 0x1b //Gray wolf2
+  pushlist 'tameables' 0x30 //Scorpion
+  pushlist 'tameables' 0xca //Alligator
+  pushlist 'tameables' 0x3f //Cougar
+  pushlist 'tameables' 0xd6 //Panther
+  pushlist 'tameables' 0xa7 //Brown Bear
+  pushlist 'tameables' 0xdd //Walrus
+  pushlist 'tameables' 0xd5 //Polar Bear
+  pushlist 'tameables' 0xd3 //Black Bear
+  pushlist 'tameables' 0xdc //Llama
+  pushlist 'tameables' 0x124 //Pack Llama
+  pushlist 'tameables' 0x123 //Pack Horse
+  pushlist 'tameables' 0xc8 //Horse
+  pushlist 'tameables' 0xe2 //Horse2
+  pushlist 'tameables' 0xcc //Horse3
+  pushlist 'tameables' 0xed //Giant Rat
+  pushlist 'tameables' 0xdb //Forest Ostard
+  pushlist 'tameables' 0xd2 //Desert Ostard
+  pushlist 'tameables' 0x122 //Boar
+  pushlist 'tameables' 0xe1 //Timber Wolf
+  pushlist 'tameables' 0xed //Hind
+  pushlist 'tameables' 0x51 //Bullfrog
+endif
+if not @inrange 'tobetamed' 13
+  @unsetalias 'tobetamed'
+  for 0 in 'tameables'
+    if @findtype tameables[] 'any' 'ground' 13 13
+      @setalias 'tobetamed' 'found'
+      break
+    endif
+  endfor
+endif
+if not @inrange 'tobetamed' 13
+  headmsg 'No new creatures near you!'
+  replay
+endif
+clearjournal
+while name 'tobetamed' != NameTheTamed[0]
+  autotargetobject 'tobetamed'
+  useskill 'animal taming'
+  @rename 'tobetamed' NameTheTamed[0]
+  if followers < 1
+    cast 'Summon Daemon'
+    pause 5000
+    msg 'all guard me'
+  endif
+  if followers == 1
+    cast "Summon Air Elemental"
+    pause 6000
+    msg 'all guard me'
+  endif
+  pause 750
+  if not @inrange 'tobetamed' 1
+    if @x 'tobetamed' > x 'self' and @y 'tobetamed' > y 'self'
+      run 'Southeast'
+    elseif @x 'tobetamed' < x 'self' and @y 'tobetamed' > y 'self'
+      run 'Southwest'
+    elseif @x 'tobetamed' > x 'self' and @y 'tobetamed' < y 'self'
+      run 'Northeast'
+    elseif @x 'tobetamed' < x 'self' and @y 'tobetamed' < y 'self'
+      run 'Northwest'
+    elseif @x 'tobetamed' > x 'self' and @y 'tobetamed' == y 'self'
+      run 'East'
+    elseif @x 'tobetamed' < x 'self' and @y 'tobetamed' == y 'self'
+      run 'West'
+    elseif @x 'tobetamed' == x 'self' and @y 'tobetamed' > y 'self'
+      run 'South'
+    elseif @x 'tobetamed' == x 'self' and @y 'tobetamed' < y 'self'
+      run 'North'
+    endif
+  endif
+endwhile
+waitforcontext 'tobetamed' 8 20000
+waitforgump 0x909cc741 15000
+@replygump 0x909cc741 2
+@ignoreobject 'tobetamed'
+@unsetalias 'tobetamed'
+pause 1500
+@Getenemy 'Enemy' 'criminal' 'gray' 'closest'
+if @findobject 'enemy'
+  autotargetobject! 'enemy'
+  attack! 'enemy'
+endif
+replay
