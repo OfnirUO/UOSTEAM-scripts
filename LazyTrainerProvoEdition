@@ -3,6 +3,7 @@ while not dead
   if poisoned
     cast 'Cure'
     target self
+    pause 1500
   endif
   if hits < 95
     if @findtype '0xe9e' '0' 'backpack' 'any' '2' //Tambourine with red tassle
