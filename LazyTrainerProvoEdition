@@ -90,6 +90,7 @@ while not dead
       endif
     endfor
   endif
+  if hit 'Pet1' < 95
   if not @inrange 'Pet1' 1
     if @x 'Pet1' > x 'self' and @y 'Pet1' > y 'self'
       walk 'Southeast'
@@ -108,6 +109,7 @@ while not dead
     elseif @x 'Pet1' == x 'self' and @y 'Pet1' < y 'self'
       walk 'North'
     endif
+  endif
   endif
   if not timerexists 'bandie'
     settimer 'bandie' 8000
