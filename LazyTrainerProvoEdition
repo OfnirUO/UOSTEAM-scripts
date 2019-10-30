@@ -1,9 +1,19 @@
 msg 'All guard'
+pause 1000
+@Getenemy 'Enemy' 'criminal' 'gray' 'closest'
+if @findobject 'enemy'
+  autotargetobject! 'enemy'
+  msg 'All Kill'
+  target 'enemy'
+endif
+pause 1500
+@cleartargetqueue
 while not dead
   if poisoned
     cast 'Cure'
     target self
     pause 1500
+    @cleartargetqueue
   endif
   if hits < maxhits
     if @findtype '0xe9e' '0' 'backpack' 'any' '2' //Tambourine with red tassle
@@ -58,16 +68,18 @@ while not dead
       target 'enemy'
     endif
     pause 500
+    @cleartargetqueue
     cast "Greater Heal"
     target self
     pause 1500
-    msg 'all guard'
+    @cleartargetqueue
   endif
   if not listexists 'petlist'
     createlist 'petlist'
     //add an entry for each pet you hunt with:
     @pushlist 'petlist' 0xdae4a
     @pushlist 'petlist' 0x2f6fd6
+    @pushlist 'petlist' 0x1bddd1
   endif
   if findalias 'Pet1' and not @findobject 'Pet1'
     unsetalias 'Pet1'
@@ -91,26 +103,79 @@ while not dead
       endif
     endfor
   endif
-  if hit 'Pet1' < 95
-  if not @inrange 'Pet1' 1
-    if @x 'Pet1' > x 'self' and @y 'Pet1' > y 'self'
-      walk 'Southeast'
-    elseif @x 'Pet1' < x 'self' and @y 'Pet1' > y 'self'
-      walk 'Southwest'
-    elseif @x 'Pet1' > x 'self' and @y 'Pet1' < y 'self'
-      walk 'Northeast'
-    elseif @x 'Pet1' < x 'self' and @y 'Pet1' < y 'self'
-      walk 'Northwest'
-    elseif @x 'Pet1' > x 'self' and @y 'Pet1' == y 'self'
-      walk 'East'
-    elseif @x 'Pet1' < x 'self' and @y 'Pet1' == y 'self'
-      walk 'West'
-    elseif @x 'Pet1' == x 'self' and @y 'Pet1' > y 'self'
-      walk 'South'
-    elseif @x 'Pet1' == x 'self' and @y 'Pet1' < y 'self'
-      walk 'North'
+  if @findobject 'Pet1' and @findobject 'Pet2'
+    if hits 'Pet1' < 90 or hits 'Pet2' < 90
+      if diffhits 'Pet1' > diffhits 'Pet2'
+      elseif not @findobject 'Pet2'
+        if not @inrange 'Pet1' 1
+          if @x 'Pet1' > x 'self' and @y 'Pet1' > y 'self'
+            walk 'Southeast'
+          elseif @x 'Pet1' < x 'self' and @y 'Pet1' > y 'self'
+            walk 'Southwest'
+          elseif @x 'Pet1' > x 'self' and @y 'Pet1' < y 'self'
+            walk 'Northeast'
+          elseif @x 'Pet1' < x 'self' and @y 'Pet1' < y 'self'
+            walk 'Northwest'
+          elseif @x 'Pet1' > x 'self' and @y 'Pet1' == y 'self'
+            walk 'East'
+          elseif @x 'Pet1' < x 'self' and @y 'Pet1' == y 'self'
+            walk 'West'
+          elseif @x 'Pet1' == x 'self' and @y 'Pet1' > y 'self'
+            walk 'South'
+          elseif @x 'Pet1' == x 'self' and @y 'Pet1' < y 'self'
+            walk 'North'
+          endif
+        endif
+      endif
     endif
   endif
+  if @findobject 'Pet2'
+    if hits 'Pet1' < 90 or hits 'Pet2' < 90
+      if diffhits 'Pet2' > diffhits 'Pet1'
+        if not @inrange 'Pet2' 1
+          if @x 'Pet2' > x 'self' and @y 'Pet2' > y 'self'
+            walk 'Southeast'
+          elseif @x 'Pet2' < x 'self' and @y 'Pet2' > y 'self'
+            walk 'Southwest'
+          elseif @x 'Pet2' > x 'self' and @y 'Pet2' < y 'self'
+            walk 'Northeast'
+          elseif @x 'Pet2' < x 'self' and @y 'Pet2' < y 'self'
+            walk 'Northwest'
+          elseif @x 'Pet2' > x 'self' and @y 'Pet2' == y 'self'
+            walk 'East'
+          elseif @x 'Pet2' < x 'self' and @y 'Pet2' == y 'self'
+            walk 'West'
+          elseif @x 'Pet2' == x 'self' and @y 'Pet2' > y 'self'
+            walk 'South'
+          elseif @x 'Pet2' == x 'self' and @y 'Pet2' < y 'self'
+            walk 'North'
+          endif
+        endif
+      endif
+    endif
+  endif
+  if @findobject 'Pet1'
+    if hits 'Pet1' < 90
+      if not @inrange 'Pet1' 1
+        if @x 'Pet1' > x 'self' and @y 'Pet1' > y 'self'
+          walk 'Southeast'
+        elseif @x 'Pet1' < x 'self' and @y 'Pet1' > y 'self'
+          walk 'Southwest'
+        elseif @x 'Pet1' > x 'self' and @y 'Pet1' < y 'self'
+          walk 'Northeast'
+        elseif @x 'Pet1' < x 'self' and @y 'Pet1' < y 'self'
+          walk 'Northwest'
+        elseif @x 'Pet1' > x 'self' and @y 'Pet1' == y 'self'
+          walk 'East'
+        elseif @x 'Pet1' < x 'self' and @y 'Pet1' == y 'self'
+          walk 'West'
+        elseif @x 'Pet1' == x 'self' and @y 'Pet1' > y 'self'
+          walk 'South'
+        elseif @x 'Pet1' == x 'self' and @y 'Pet1' < y 'self'
+          walk 'North'
+        endif
+      endif
+    endif
   endif
   if not timerexists 'bandie'
     settimer 'bandie' 8000
@@ -144,10 +209,11 @@ while not dead
         endif
       endif
     endif
-  endif
-  if @injournal 'too far away' 'system'
-    @clearjournal
-  elseif @injournal 'stay close enough' 'system'
-    @clearjournal
+    if @injournal 'too far away' 'system'
+      @clearjournal
+    elseif @injournal 'stay close enough' 'system'
+      @clearjournal
+    endif
   endif
 endwhile
+
