@@ -1,0 +1,225 @@
+msg 'All Guard'
+@cleartargetqueue
+while not dead
+  if poisoned
+    cast 'Cure'
+    @cleartargetqueue
+    target self
+    pause 1500
+    @cleartargetqueue
+  endif
+  @getenemy 'murderer' 'enemy' 'criminal' 'gray' 'closest'
+  if @findobject 'enemy'
+    autotargetobject! 'enemy'
+    @attack 'enemy'
+  endif
+  pause 100
+  @clearusequeue
+  @cancelautotarget
+  if hits < 85
+    if @findtype '0xe9e' '0' 'backpack' 'any' '2' //Tambourine with red tassle
+      @setalias 'instrument' 'found'
+    elseif @findtype '0x2805' 'any' 'backpack' 'any' '4' //Flute
+      @setalias 'instrument' 'found'
+      headmsg "Instrument set" '66'
+      @useobject 'instrument'
+    elseif @findtype '0xe9d' '0' 'backpack' 'any' '2' //Tambourine
+      @setalias 'instrument' 'found'
+      @useobject 'instrument'
+    elseif @findtype '0xe9c' '0' 'backpack' 'any' '2' //Drum
+      @setalias 'instrument' 'found'
+      @useobject 'instrument'
+    elseif @findtype '0xeb3' '0' 'backpack' 'any' '2' //Lute
+      @setalias 'instrument' 'found'
+      @useobject 'instrument'
+    elseif @findtype '0xeb2' '0' 'backpack' 'any' '2' //Lap Harp
+      @setalias 'instrument' 'found'
+      @useobject 'instrument'
+    elseif @findtype '0xeb1' '0' 'backpack' 'any' '2' //Standing Harp
+      @setalias 'instrument' 'found'
+      useobject 'instrument'
+      pause 800
+    else
+      headmsg 'No instrument found'
+      stop
+    endif
+    @cleartargetqueue
+    @ignoreobject 'pet1'
+    @ignoreobject 'pet2'
+    if targetexists
+      canceltarget
+    endif
+    pause 800
+    @getenemy 'murderer' 'criminal' 'grey' 'gray' 'nearest'
+    if @inrange 'enemy' 9
+      sysmsg 'Provoing....' '38'
+      useskill 'provocation'
+      waitfortarget 5000
+      target! 'enemy'
+      @getenemy 'murderer' 'criminal' 'grey' 'gray' 'nearest'
+      waitfortarget 5000
+      target! 'enemy'
+    else
+      headmsg 'Nothing to provoke!!!' '39'
+    endif
+    pause 500
+    @cleartargetqueue
+    cast "Greater Heal"
+    @cleartargetqueue
+    target self
+    pause 1500
+    @cleartargetqueue
+  endif
+  if not listexists 'petlist'
+    createlist 'petlist'
+    //add an entry for each pet you hunt with:
+    @pushlist 'petlist' 0x123c12
+    @pushlist 'petlist' 0xdae4a
+    @pushlist 'petlist' 0x1bddd1
+    @pushlist 'petlist' 0x2f6fd6
+    @pushlist 'petlist' 0x29a734
+  endif
+  if findalias 'Pet1' and not @findobject 'Pet1'
+    unsetalias 'Pet1'
+  endif
+  if findalias 'Pet2' and not @findobject 'Pet2'
+    unsetalias 'Pet2'
+  endif
+  if findalias 'Pet1' and findalias 'Pet2'
+    if serial 'Pet1' == serial 'Pet2'
+      unsetalias 'Pet2'
+    endif
+  endif
+  if not @findobject 'Pet1' or not @findobject 'Pet2'
+    for 0 to 'petlist'
+      if @findobject petlist[] 'any' 'ground' 0 30
+        if not @findobject 'Pet1'
+          setalias 'Pet1' petlist[]
+        elseif not @findobject 'Pet2' and serial 'Pet1' != 'petlist[]'
+          setalias 'Pet2' petlist[]
+        endif
+      endif
+    endfor
+  endif
+  if @findobject 'Pet1' and @findobject 'Pet2'
+    if hits 'Pet1' < 90 or hits 'Pet2' < 90
+      if diffhits 'Pet1' > diffhits 'Pet2'
+      elseif not @findobject 'Pet2'
+        if not @inrange 'Pet1' 1
+          if @x 'Pet1' > x 'self' and @y 'Pet1' > y 'self'
+            walk 'Southeast'
+          elseif @x 'Pet1' < x 'self' and @y 'Pet1' > y 'self'
+            walk 'Southwest'
+          elseif @x 'Pet1' > x 'self' and @y 'Pet1' < y 'self'
+            walk 'Northeast'
+          elseif @x 'Pet1' < x 'self' and @y 'Pet1' < y 'self'
+            walk 'Northwest'
+          elseif @x 'Pet1' > x 'self' and @y 'Pet1' == y 'self'
+            walk 'East'
+          elseif @x 'Pet1' < x 'self' and @y 'Pet1' == y 'self'
+            walk 'West'
+          elseif @x 'Pet1' == x 'self' and @y 'Pet1' > y 'self'
+            walk 'South'
+          elseif @x 'Pet1' == x 'self' and @y 'Pet1' < y 'self'
+            walk 'North'
+          endif
+        endif
+      endif
+    endif
+  endif
+  if @findobject 'Pet2'
+    if hits 'Pet1' < 90 or hits 'Pet2' < 90
+      if diffhits 'Pet2' > diffhits 'Pet1'
+        if not @inrange 'Pet2' 1
+          if @x 'Pet2' > x 'self' and @y 'Pet2' > y 'self'
+            walk 'Southeast'
+          elseif @x 'Pet2' < x 'self' and @y 'Pet2' > y 'self'
+            walk 'Southwest'
+          elseif @x 'Pet2' > x 'self' and @y 'Pet2' < y 'self'
+            walk 'Northeast'
+          elseif @x 'Pet2' < x 'self' and @y 'Pet2' < y 'self'
+            walk 'Northwest'
+          elseif @x 'Pet2' > x 'self' and @y 'Pet2' == y 'self'
+            walk 'East'
+          elseif @x 'Pet2' < x 'self' and @y 'Pet2' == y 'self'
+            walk 'West'
+          elseif @x 'Pet2' == x 'self' and @y 'Pet2' > y 'self'
+            walk 'South'
+          elseif @x 'Pet2' == x 'self' and @y 'Pet2' < y 'self'
+            walk 'North'
+          endif
+        endif
+      endif
+    endif
+  endif
+  if @findobject 'Pet1'
+    if hits 'Pet1' < 90
+      if not @inrange 'Pet1' 1
+        if @x 'Pet1' > x 'self' and @y 'Pet1' > y 'self'
+          walk 'Southeast'
+        elseif @x 'Pet1' < x 'self' and @y 'Pet1' > y 'self'
+          walk 'Southwest'
+        elseif @x 'Pet1' > x 'self' and @y 'Pet1' < y 'self'
+          walk 'Northeast'
+        elseif @x 'Pet1' < x 'self' and @y 'Pet1' < y 'self'
+          walk 'Northwest'
+        elseif @x 'Pet1' > x 'self' and @y 'Pet1' == y 'self'
+          walk 'East'
+        elseif @x 'Pet1' < x 'self' and @y 'Pet1' == y 'self'
+          walk 'West'
+        elseif @x 'Pet1' == x 'self' and @y 'Pet1' > y 'self'
+          walk 'South'
+        elseif @x 'Pet1' == x 'self' and @y 'Pet1' < y 'self'
+          walk 'North'
+        endif
+      endif
+    endif
+  endif
+  if not timerexists 'bandie'
+    settimer 'bandie' 8000
+  endif
+  if not targetexists
+    if @injournal 'finish applying' 'system' or timer 'bandie' >= 10000
+      if @findobject 'Pet1' and @findobject 'Pet2'
+        if hits 'Pet1' < 90 or hits 'Pet2' < 90
+          if diffhits 'Pet1' > diffhits 'Pet2' and @inrange 'Pet1' 1
+            usetype 0xe21 'any' 'backpack'
+            waitfortarget 3500
+            target! 'Pet1'
+            settimer 'bandie' 0
+          elseif @inrange 'Pet2' 1 and hits 'Pet2' < 90
+            usetype 0xe21 'any' 'backpack'
+            waitfortarget 3500
+            target! 'Pet2'
+            settimer 'bandie' 0
+          endif
+          clearjournal
+          pause 1000
+        endif
+      elseif @findobject 'Pet1' or @findobject 'Pet2'
+        if hits 'found' < 90 and @inrange 'found' 1
+          usetype 0xe21 'any' 'backpack'
+          waitfortarget 3500
+          target! 'found'
+          settimer 'bandie' 0
+          clearjournal
+          pause 1000
+        endif
+      endif
+    endif
+    if @injournal 'too far away' 'system'
+      @clearjournal
+    elseif @injournal 'stay close enough' 'system'
+      @clearjournal
+    endif
+  endif
+  if weight > 370
+    if not buffexists "Bless"
+      cast "bless"
+      @cleartargetqueue
+      target self
+      pause 1500
+      @cleartargetqueue
+    endif
+  endif
+endwhile
